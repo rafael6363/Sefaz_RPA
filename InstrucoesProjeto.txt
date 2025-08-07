@@ -1,0 +1,100 @@
+Separacao de projeto
+O RPA fará os seguintes passos:
+
+--hianny/rafa
+1. Acessar o site https://www.sefaz.mt.gov.br/acesso/;
+2. Realizar o login como contabilista;
+3. No menu esquerdo acessar o caminho: "Consulta NFe" > "Consultas"> "Consulta de NF-e
+Emitida/Recebida";
+
+--rafa
+4. Nas informações do contribuinte, a consulta deve ser feita por 'Destinatário'. o Tipo de Documento, a UF
+do destinatário, bem como o CNPJ/CPF, devem ser consultados de acordo com a tabela SIGAEMP;
+5. No período, a Data Inicial e a Data Final devem ser o primeiro e o último dia do mês anterior,
+respectivamente;
+6. Clicar em "Consultar", logo após a geração da Consulta, clicar em "Exportar para Excel".
+
+--Rafa
+7. Alterar o nome do arquivo para o seguinte padrão: NFe + Grupo + Filial + Mês + Ano;
+8. Alterar a extensão de .XLS para .CSV;
+9. Os arquivos devem ser salvos na subpasta separados por Grupo de Empresas, que será criado pelo RPA
+todo mês cujo nome seguirá o padrão: Número do Mês - Mês, na pasta "Consulta de NF-e
+Emitida/Recebida" dentro do diretório SPED Fiscal.
+
+
+SEGUNDA PARTE 
+--hianny
+O RPA também deve exportar também as relações dos CT-e seguindo os passos:
+1. No menu esquerdo: "Conhecimento de Transporte Eletrônico (CTe)" > "Consulta CT-e
+Emitidos/Recebidos":
+
+--rafa
+2. Em Tipo de Consulta, Selecionar: "Tomador";
+3. Preencher a "Identificação do Tomador" de acordo com o item 4 do primeiro item;
+4. No período, a Data Inicial e a Data Final devem ser o primeiro e o último dia do mês anterior,
+respectivamente;
+5. Clicar em "Consultar", logo após a geração da Consulta, clicar em "Mostrar Planilha";
+
+--rafa
+6. Alterar o nome do arquivo para o seguinte padrão: CTe + Grupo + Filial + Mês + Ano;
+7. Alterar a extensão de .XLS para .CSV;
+8. Os arquivos devem ser salvos na subpasta separados por Grupo de Empresas, que será criado pelo RPA
+todo mês cujo nome seguirá o padrão: Número do Mês - Mês, na pasta "Consulta de СТ-е
+Emitida/Recebida" dentro do diretório SPED Fiscal.
+
+--hianny/rafa
+Caso a filial tenha Inscrição Estadual também seguir esses passos:
+1. No menu esquerdo acessar o caminho: "Sistema Conta Corrente Fiscal 3.0" > "Lançamento" > "Consultar
+Lançamento";
+2. Preencher o campo "Número do Documento" de acordo com a tabela SIGAEMP inserindo a Inscrição
+3.
+Estadual da filial consultada:
+Nos campos "Período de Referência Inicial" e "Período de Referência Final" colocar o mês anterior ao
+corrente e Pesquisar;
+4. Após a pesquisa carregar, salvar a página como PDF, com o layout em Paisagem;
+Salvar o arquivo no diretório SPED do Fiscal sob o nome especificado no próximo ponto deste
+
+PASTAS
+-criar pastas dos meses dentro da pasta do projeto 
+
+--SEFAZ_RPA
+    |
+    ---documentos/
+        |
+        ---csv NFE
+        |   |
+        |   ---Mes_01
+        |   |
+        |   ---Mes_02
+        |   |
+        |
+        ---csv NFE
+            |
+            ---Mes_01
+            |
+            ---Mes_02
+            |
+
+--para a producao sera colocado nesse diretorio:
+    C:
+    |
+    ---SPED_fiscal
+        |
+        ---Consulta de СТ-е Emitida/Recebida
+        |   |
+        |   ---Mes_01
+        |   |
+        |   ---Mes_02
+        |   
+        ---Consulta de NF-e Emitida/Recebida
+            |
+            ---Mes_01
+            |
+            ---Mes_02
+            |
+
+EXEMPLO DE COMO DEVE SER O NOME DOS CSV:
+
+NFE: Nfe_16_PR FLOR DO CERRADO_07_08
+
+CTE: Cte_16_PR FLOR DO CERRADO_07_08
