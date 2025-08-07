@@ -16,9 +16,9 @@ def retornoCnpj():
             """)
     # Usar fetchall() para pegar todas as linhas
     Resutadocnpj = cursor.fetchall()
-    print(type(Resutadocnpj))
-    for filial in Resutadocnpj:
-        print(filial)
+    #print(type(Resutadocnpj))
+    #for filial in Resutadocnpj:
+    #    print(filial)
     
     #df = pandas.DataFrame(Resutadocnpj)
     #df.to_csv(fr'sequencianotas\cnpjFiliais\resultado.csv', index=False, header=False)

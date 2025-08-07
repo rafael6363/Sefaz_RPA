@@ -27,16 +27,14 @@ data_inicio, data_fim = DatasMes.gerar_intervalo_datas()
 #pegando uma lista com o grupo, filliais e cnpj do banco de dados
 lista_filiais = database.retornoCnpj()
 
-#----------------------------------------
-
-
+#-----------caminho download-------------------
+caminho = fr'C:\RPA_NFE_CTE\Sefaz_RPA\downloads\xls'
 
 def mainNfe():
     #setando opçoes no chromedriver
     options = webdriver.ChromeOptions()
     options.add_experimental_option("prefs", {
-    "download.default_directory": "document/xls/",
-    #
+    "download.default_directory": caminho,
     "download.prompt_for_download": False,
     "download.directory_upgrade": True,
     "safebrowsing.enabled": True
@@ -261,7 +259,7 @@ def loopNfe(driver,lista_filiais):
                     print('clicado para exportar')
                     sleep(15)
                     try:
-                        modificaCsv.coverterExcelpCsv()
+                        modificaCsv.coverterExcelpCsv('nfe', grupo, filial)
                         print("criado o arquivo consultart.csv")
                         import shutil
                         if os.path.isfile('sequencianotas\csv\consulta.csv'):

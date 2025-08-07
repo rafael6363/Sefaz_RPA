@@ -13,7 +13,7 @@ def decode64(base64_string):
     # Escrever os dados decodificados no arquivo
     with open(output_file_path, 'wb') as output_file:
         output_file.write(decoded_data)    
-    print("Arquivo salvo com sucesso em:", output_file_path)
+    #print("Arquivo salvo com sucesso em:", output_file_path)
     return 
 
 if __name__ == "__main__":
