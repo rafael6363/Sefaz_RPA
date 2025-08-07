@@ -9,7 +9,7 @@ def anticaptcha():
     # Get your softId here: https://anti-captcha.com/clients/tools/devcenter
     solver.set_soft_id(0)
 
-    captcha_text = solver.solve_and_return_solution(fr'C:\Users\rafael.r.santos\Desktop\python\img\captcha.jpg')
+    captcha_text = solver.solve_and_return_solution(fr'C:\RPA_NFE_CTE\Sefaz_RPA\img\captcha.jpg')
     if captcha_text != 0:
         print("o captcha foi resolvido corretamente")
 

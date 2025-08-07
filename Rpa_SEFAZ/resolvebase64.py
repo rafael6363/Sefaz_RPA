@@ -2,7 +2,6 @@ import sys
 import base64
 
 
-
 def decode64(base64_string):
     # Decodificar a string base64       
     #print(base64_string)
@@ -10,9 +9,7 @@ def decode64(base64_string):
     #print(base64_string)
     decoded_data = base64.b64decode(base64_string)
     # Caminho do arquivo de saída
-
     output_file_path = fr'C:\Sefaz_RPA\img\captcha.jpg'
-
     # Escrever os dados decodificados no arquivo
     with open(output_file_path, 'wb') as output_file:
         output_file.write(decoded_data)    
