@@ -4,7 +4,7 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from time import sleep
-import anticaptcha
+import antiCaptcha
 import resolvebase64
 import json
 import pandas as pd
@@ -15,11 +15,11 @@ import glob
 
 #pega as informacoes que estao na 
 #--------------json----------------
-with open('json\contabilista.json', 'r') as file:
+with open('json\\contabilista.json', 'r') as file:
     dados = json.load(file)
 
-userContabilista = dados["contabilista"]
-senhaContabilista = dados["senha_contabilista"]
+userContabilista = dados["Contabilista"]
+senhaContabilista = dados["SenhaContabilista"]
 
 
 
@@ -72,11 +72,13 @@ try:
             captcha_element = driver.find_element(By.XPATH, '//img[contains(@src, "data:image/png;base64")]')
             # Pegando o atributo src
             src = captcha_element.get_attribute('src')
+            print(src)
             #o decode64 pega a imagem que vem em base 64 e converte em jpg
             resolvebase64.decode64(src)
             sleep(1)
             #anticaptcha resolve o captch
-            captcha = anticaptcha()
+            captcha = antiCaptcha.anticaptcha()
+
             print(captcha)
 
             #a enviar captcha resolvido
@@ -189,8 +191,8 @@ grupo = 16
 filial = 1008053
 
 # Caminho da sua pasta
-pasta_xls = r"C:\Users\rafael.r.santos\Desktop\teste_XLS\XLS"
-pasta_csv = (r'C:\Users\rafael.r.santos\Desktop\teste_XLS\CSV')
+pasta_xls = r"C:\Sefaz_RPA\documents\csv"
+pasta_csv = r'C:\Sefaz_RPA\documents\xls'
 
 # Busca todos os arquivos .XLS na pasta
 arquivos_xls = glob.glob(os.path.join(pasta_xls, '*.xls'))
