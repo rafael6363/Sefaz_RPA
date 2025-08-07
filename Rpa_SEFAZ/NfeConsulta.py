@@ -33,6 +33,7 @@ options.add_experimental_option("prefs", {
 "download.directory_upgrade": True,
 "safebrowsing.enabled": True
 })
+
 #options.add_argument('--headless')
 options.add_argument('--no-sandbox')
 options.add_argument('--mute-audio')
@@ -189,8 +190,9 @@ grupo = 16
 filial = 1008053
 
 # Caminho da sua pasta
-pasta_xls = r"C:\Users\rafael.r.santos\Desktop\teste_XLS\XLS"
-pasta_csv = (r'C:\Users\rafael.r.santos\Desktop\teste_XLS\CSV')
+pasta_xls = fr'Sefaz_RPA\documentos\csv'
+
+pasta_csv = fr'Sefaz_RPA\documentos\csv'
 
 # Busca todos os arquivos .XLS na pasta
 arquivos_xls = glob.glob(os.path.join(pasta_xls, '*.xls'))
