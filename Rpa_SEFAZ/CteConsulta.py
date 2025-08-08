@@ -4,7 +4,7 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from time import sleep
-import anticaptcha
+import antiCaptcha
 import resolvebase64
 import json
 import database
@@ -98,7 +98,7 @@ def LoginEcaptcha(driver):
                 resolvebase64.decode64(src)
                 sleep(1)
                 #anticaptcha resolve o captch
-                captcha = anticaptcha.anticaptcha()
+                captcha = antiCaptcha.anticaptcha()
 
                 print(captcha)
 

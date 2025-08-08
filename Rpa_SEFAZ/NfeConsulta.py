@@ -9,7 +9,7 @@ import resolvebase64
 import json
 import database
 import DatasMes
-import ModificaCsv
+import modificaCsv
 import os
 from datetime import datetime
 
@@ -20,7 +20,7 @@ if mesAtual < 10:
 
 #pega as informacoes que estao no json
 #--------------json----------------
-with open('json\\contabilista.json', 'r') as file:
+with open('json\contabilista.json', 'r') as file:
     dados = json.load(file)
 userContabilista = dados["Contabilista"]
 senhaContabilista = dados["SenhaContabilista"]
@@ -34,7 +34,7 @@ data_inicio, data_fim = DatasMes.gerar_intervalo_datas()
 lista_filiais = database.retornoCnpj()
 
 #-----------caminho download-------------------
-caminho = fr'C:\RPA_NFE_CTE\Sefaz_RPA\downloads\xls'
+caminho = fr'C:\Sefaz_RPA\downloads\xls'
 
 def mainNfe():
     #setando opçoes no chromedriver
@@ -57,38 +57,43 @@ def mainNfe():
     LoginEcaptcha(driver)
     loopNfe(driver,lista_filiais)
 
-try:
-    tipoUsuario = WebDriverWait(driver, 10).until(
-        EC.element_to_be_clickable((By.ID, 'formLogin:selectTipoUsuario_label')))
-    tipoUsuario.click()
+#----------Comecando login----------------
+def LoginEcaptcha(driver):
+    try:
+        tipoUsuario = WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable((By.ID, 'formLogin:selectTipoUsuario_label')))
+        tipoUsuario.click()
 
-    # Depois espera o item 'Contabilista' ficar visível e clica
-    contabilista = WebDriverWait(driver, 10).until(
-        EC.visibility_of_element_located((By.ID, 'formLogin:selectTipoUsuario_1')))
+        # Depois espera o item 'Contabilista' ficar visível e clica
+        contabilista = WebDriverWait(driver, 10).until(
+            EC.visibility_of_element_located((By.ID, 'formLogin:selectTipoUsuario_1')))
 
-    contabilista.click() 
-    sleep(2)
-    for x in range(5):
-        try:
-            crc = WebDriverWait(driver, 10).until(
-                EC.visibility_of_element_located((By.ID, 'formLogin:inputLogin'))
-            )
-            crc.clear()
-            sleep(1)
-            crc.send_keys(userContabilista)
+        contabilista.click() 
+        sleep(2)
+        #tenta resolver o captcha 5x, caso nao consiga, ele fecha o programa
+        cnpjs = database.retornoCnpj()
+        for x in range(5):
+            try:
+                crc = WebDriverWait(driver, 10).until(
+                    EC.visibility_of_element_located((By.ID, 'formLogin:inputLogin'))
+                )
+                crc.clear()
+                sleep(1)
+                crc.send_keys(userContabilista)
 
-            senha = WebDriverWait(driver, 10).until(
-                EC.visibility_of_element_located((By.ID, 'formLogin:inputSenha'))
-            )
-            senha.send_keys(senhaContabilista)
-            sleep(2)
+                senha = WebDriverWait(driver, 10).until(
+                    EC.visibility_of_element_located((By.ID, 'formLogin:inputSenha'))
+                )
+                senha.clear()
+                senha.send_keys(senhaContabilista)
+                sleep(2)
 
 #------------------------------------------------------
                 #resolvendo o captcha na sefaz
                 captcha_element = driver.find_element(By.XPATH, '//img[contains(@src, "data:image/png;base64")]')
                 # Pegando o atributo src
                 src = captcha_element.get_attribute('src')
-                print(src)
+                #print(src)
                 #o decode64 pega a imagem que vem em base 64 e converte em jpg
                 resolvebase64.decode64(src)
                 sleep(1)
@@ -105,68 +110,66 @@ try:
                 captchaResolvido.send_keys(captcha)
                 sleep(2)               
 
-            efetuarLogin = WebDriverWait(driver, 10).until(
-                EC.element_to_be_clickable((By.XPATH, "//button[contains(., 'Efetuar Login')]"))
-            )
-            efetuarLogin.click() 
+                efetuarLogin = WebDriverWait(driver, 10).until(
+                    EC.element_to_be_clickable((By.XPATH, "//button[contains(., 'Efetuar Login')]"))
+                )
+                efetuarLogin.click() 
 
-            #-----------------------------------
-            #tenta ver se ocorreu algum erro
-            #se eocorreu tenta novamente
-            try:
-                erro = None
-                #erro = driver.find_element(By.CLASS_NAME, 'ui-messages-error')
-                erro = WebDriverWait(driver, 10).until(
-                EC.visibility_of_element_located((By.CLASS_NAME, 'ui-messages-error')))
+#-----------------------------------
+                #Verifica se ocorreu algum erro
+                #se eocorreu tenta novamente
+                try:
+                    erro = None
+                    erro = WebDriverWait(driver, 10).until(
+                    EC.visibility_of_element_located((By.CLASS_NAME, 'ui-messages-error')))
+                except:
+                    pass
+                if erro:
+                    continue
+
+#-----------------------------------
+                #tenta ver se existe a tela de sessao duplicada
+                #se a sessao esta duplicada, substitue e acessa            
+                try:
+                    outraSessaoAberta = None
+                    outraSessaoAberta = WebDriverWait(driver, 10).until(
+                        EC.visibility_of_element_located((By.XPATH, "//*[contains(@id, 'superPanelMensagem')]"))
+                    )
+                except:
+                    pass
+                if outraSessaoAberta:
+                    senhaSessao = WebDriverWait(driver, 10).until(
+                        EC.visibility_of_element_located((By.CSS_SELECTOR, "input[type='password'].ui-password"))
+                    )
+                    senhaSessao.send_keys(senhaContabilista)
+
+                    substituir  = WebDriverWait(driver, 10).until(
+                        EC.visibility_of_element_located((By.CSS_SELECTOR, "input.btnPadrao[value='Substituir']"))
+                    )
+                    substituir.click()
+                    break
+#---------------------------
+
+                try:
+                    telaInicial = None 
+                    telaInicial = WebDriverWait(driver, 10).until(
+                        EC.visibility_of_element_located((By.ID, "tst"))
+                    )
+                except:
+                    pass
+                
+                if telaInicial:
+                    break
+                else:
+                    pass
+        
             except:
                 pass
-            if erro:
-                continue
-            #---------------------------
-
-            #-----------------------------------
-            #tenta ver se existe a tela de sessao duplicada
-            #se a sessao esta duplicada, substitue e acessa            
-            try:
-                outraSessaoAberta = None
-                outraSessaoAberta = WebDriverWait(driver, 10).until(
-                    EC.visibility_of_element_located((By.XPATH, "//*[contains(@id, 'superPanelMensagem')]"))
-                )
-            except:
-                pass
-            if outraSessaoAberta:
-                senhaSessao = WebDriverWait(driver, 10).until(
-                    EC.visibility_of_element_located((By.CSS_SELECTOR, "input[type='password'].ui-password"))
-                )
-                senhaSessao.send_keys(senhaContabilista)
-
-                substituir  = WebDriverWait(driver, 10).until(
-                    EC.visibility_of_element_located((By.CSS_SELECTOR, "input.btnPadrao[value='Substituir']"))
-                )
-                substituir.click()
-                break
-            #---------------------------
-
-            try:
-                telaInicial = None 
-                telaInicial = WebDriverWait(driver, 10).until(
-                    EC.visibility_of_element_located((By.ID, "tst"))
-                )
-            except:
-                pass
-            
-            if telaInicial:
-                break
-            else:
-                pass
-    
-        except:
-            pass
-    print('Pasou do login com exito!')
-    #print(cnpjs)
-except Exception as e:
-    print('Erro ao tentar logar')
-    print(e)
+        print('Pasou do login com exito!')
+        #print(cnpjs)
+    except Exception as e:
+        print('Erro ao tentar logar')
+        print(e)
 
 #---------------------------
 #1-Essa funçao abre uma abre uma aba para conseguir acessar a consulta de NFe
