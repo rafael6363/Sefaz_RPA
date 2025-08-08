@@ -11,6 +11,7 @@ import database
 import DatasMes
 import modificaCsv
 import os
+import shutil
 from datetime import datetime
 
 hoje = datetime.now()
@@ -194,7 +195,7 @@ def loopNfe(driver,lista_filiais):
 
                 WebDriverWait(driver, 10).until(lambda driver: len(driver.window_handles) > 1)
                 driver.switch_to.window(driver.window_handles[1])
-                driver.get('https://www.sefaz.mt.gov.br/nfe/pages/consultaemitidasrecebidas/consultaemitidasrecebidas.xhtml')
+                driver.get('https://www.sefaz.mt.gov.br/ccfiscal/lancamento/consulta')
                 sleep(1)
 
                 #----------------------------------
@@ -268,7 +269,7 @@ def loopNfe(driver,lista_filiais):
                     try:
                         nomeAruivoAtual = modificaCsv.coverterExcelpCsv('Nfe', grupo, filial)
                         print(fr"criado o arquivo {nomeAruivoAtual}")
-                        import shutil
+                        
                         if os.path.isfile(fr'downloads\csv\mes_{mesAtual}\{nomeAruivoAtual}'):
                             tamanhoCsv = os.path.getsize(fr'downloads\csv\mes_{mesAtual}\{nomeAruivoAtual}')
 
