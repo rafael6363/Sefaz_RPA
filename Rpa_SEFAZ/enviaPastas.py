@@ -5,7 +5,7 @@ from datetime import datetime
 
 # Caminhos
 base_path = r'C:\SPED_fiscal'
-origem_dir = r'C:\Sefaz_RPA\documents\csv'
+origem_dir = r'downloads\csv'
 
 # Tipos e seus respectivos diretórios
 tipos = {
