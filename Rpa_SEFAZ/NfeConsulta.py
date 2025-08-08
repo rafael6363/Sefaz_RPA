@@ -11,6 +11,12 @@ import database
 import DatasMes
 import modificaCsv
 import os
+from datetime import datetime
+
+hoje = datetime.now()
+mesAtual = hoje.month
+if mesAtual < 10:
+    mesAtual = f'0{mesAtual}'
 
 #pega as informacoes que estao no json
 #--------------json----------------
@@ -87,7 +93,7 @@ def LoginEcaptcha(driver):
                 captcha_element = driver.find_element(By.XPATH, '//img[contains(@src, "data:image/png;base64")]')
                 # Pegando o atributo src
                 src = captcha_element.get_attribute('src')
-                print(src)
+                #print(src)
                 #o decode64 pega a imagem que vem em base 64 e converte em jpg
                 resolvebase64.decode64(src)
                 sleep(1)
@@ -254,31 +260,24 @@ def loopNfe(driver,lista_filiais):
                     
                 if exportarExcel:
                     exportarExcel.click()
+                    caminhoPadrao = fr'C:\SPED_fiscal\Consulta de NF-e EmitidaRecebida\mes_{mesAtual}'
 #------------------------------------------------------------------
 #Fazendo modificacoes do arquivo baixado
                     print('clicado para exportar')
                     sleep(15)
                     try:
-                        modificaCsv.coverterExcelpCsv('nfe', grupo, filial)
-                        print("criado o arquivo consultart.csv")
+                        nomeAruivoAtual = modificaCsv.coverterExcelpCsv('Nfe', grupo, filial)
+                        print(fr"criado o arquivo {nomeAruivoAtual}")
                         import shutil
-                        if os.path.isfile('sequencianotas\csv\consulta.csv'):
-                            tamanhoCsv = os.path.getsize('sequencianotas\csv\Consulta.csv')
+                        if os.path.isfile(fr'downloads\csv\mes_{mesAtual}\{nomeAruivoAtual}'):
+                            tamanhoCsv = os.path.getsize(fr'downloads\csv\mes_{mesAtual}\{nomeAruivoAtual}')
 
                             if tamanhoCsv > 20.48:
                                 print(f'O arquivo  é maior que 1024 bytes.')
 
-                                if os.path.exists(fr'sequencianotas\csv\{cnpj[0]}.csv'):
-                                    print('O arquivo ja existe e sera substituido')
-                                    os.remove(fr'sequencianotas\csv\{cnpj[0]}.csv')
-
-                                os.rename('sequencianotas\csv\Consulta.csv', fr'sequencianotas\csv\{cnpj[0]}.csv')
-                                print(fr"consultar renomeado para 'sequencianotas\csv\{cnpj[0]}.csv'")
-                                sleep(2)
-                                
-                                shutil.copy(fr'sequencianotas\csv\{cnpj[0]}.csv', fr'S:\Automacao\imparqsefaz\{cnpj[0]}.csv')
+                                shutil.copy(fr'downloads\csv\mes_{mesAtual}\{nomeAruivoAtual}', fr'{caminhoPadrao}\{nomeAruivoAtual}')
                      
-                                print(fr"arquivo copiado para 'sequencianotas\csvProd\{cnpj[0]}.csv'")                          
+                                print(fr"Arquivo foi copiado para a pasta: {caminhoPadrao}\{nomeAruivoAtual}'")                          
                                 driver.close()
                                 driver.switch_to.window(driver.window_handles[0])
                                 print('janela fechada')

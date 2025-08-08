@@ -5,10 +5,12 @@ from datetime import datetime
 hoje = datetime.now()
 ano = hoje.year
 mes = hoje.month
+if mes < 10:
+    mes = f'0{mes}'
 
 usuario = os.getlogin()
-caminhoxls = fr'C:\RPA_NFE_CTE\Sefaz_RPA\downloads\xls'
-caminhocsv = fr'C:\RPA_NFE_CTE\Sefaz_RPA\downloads\xls'
+caminhoxls = fr'downloads\xls'
+caminhocsv = fr'downloads\xls'
 
 
 def ultimoArquivoDownloads():
@@ -38,19 +40,21 @@ def coverterExcelpCsv(consulta,grupo,filial):
     ultimoArq  =  ultimoArquivoDownloads()
     #le o excel e converte em csv
     read = pd.read_excel(fr"{caminhoxls}\{ultimoArq[1]}")
-    read.to_csv(fr"C:\RPA_NFE_CTE\Sefaz_RPA\downloads\csv\{nomeArquivo}", index=False)
+    read.to_csv(fr"downloads\csv\mes_{mes}\{nomeArquivo}", index=False)
     #le as linhas do csv
-    df = pd.read_csv(fr"C:\RPA_NFE_CTE\Sefaz_RPA\downloads\csv\{nomeArquivo}",index_col=None)
+    df = pd.read_csv(fr"downloads\csv\mes_{mes}\{nomeArquivo}",index_col=None)
 
     # Exclui as 5 primeiras linhas
     df = df.iloc[5:]
     df.replace(' " ', "")
     print('tira as primeiras 5 linhas do csv')
     # Salva o DataFrame modificado em um novo arquivo CSV
-    df.to_csv(fr"C:\RPA_NFE_CTE\Sefaz_RPA\downloads\csv\{nomeArquivo}", header=False, index=False, sep=';')
+    df.to_csv(fr"downloads\csv\mes_{mes}\{nomeArquivo}", header=False, index=False, sep=';')
     #remove o ultimo download feito deixando somente o csv 
     os.remove(fr"{caminhoxls}\{ultimoArq[1]}")
     print("removido o ultimo arquivo do downloads")
 
+    return nomeArquivo
+
 if __name__ == "__main__":
-    coverterExcelpCsv()    
+    coverterExcelpCsv('','','')    
