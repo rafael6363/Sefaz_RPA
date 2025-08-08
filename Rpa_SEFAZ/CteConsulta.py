@@ -10,6 +10,7 @@ import json
 import database
 import DatasMes
 import modificaCsv
+
 import os
 from datetime import datetime
 
@@ -34,7 +35,7 @@ data_inicio, data_fim = DatasMes.gerar_intervalo_datas()
 lista_filiais = database.retornoCnpj()
 
 #-----------caminho download-------------------
-caminho = fr'C:\RPA_NFE_CTE\Sefaz_RPA\downloads\xls'
+caminho = fr'downloads\xls'
 
 def mainCte():
     #setando opçoes no chromedriver
@@ -55,8 +56,7 @@ def mainCte():
     driver.implicitly_wait(2)
     driver.get(url)
     LoginEcaptcha(driver)
-    loopCte(driver,lista_filiais)
-    driver.quit()
+    loopNfe(driver,lista_filiais)
 
 #----------Comecando login----------------
 def LoginEcaptcha(driver):
@@ -178,7 +178,7 @@ def LoginEcaptcha(driver):
 #3-e faz o download do arquivo
 
 
-def loopCte(driver,lista_filiais):
+def loopNfe(driver,lista_filiais):
     try:
         for filiais in lista_filiais:
             grupo = filiais[0]
@@ -204,145 +204,12 @@ def loopCte(driver,lista_filiais):
                 dadosConsultaCTE(driver,cnpj)
                 #----------------------------------
 
-                mensagemErro = None
-                try:
-                    mensagemErro = WebDriverWait(driver, 5).until(
-                        EC.visibility_of_element_located((By.XPATH, "//div[contains(@class, 'ui-dialog-content') and contains(text(), 'Contabilista não representa')]"))
-                    )
-                except:
-                    pass
 
-                if mensagemErro:
-                    print(fr'Ocorreu um erro no CNPJ: {cnpj}')
-                    sleep(2)
-                    driver.close()
-                    driver.switch_to.window(driver.window_handles[0])
-                    sleep(2)
-                    break  
-                
-                mensagemErroDoc = None
-                try:
-                    mensagemErroDoc = WebDriverWait(driver, 5).until(
-                        EC.visibility_of_element_located((By.XPATH, "//div[contains(text(),'Documento deve ser informado')]"))
-                    )
-                except:
-                    pass
+                #espera o botao de download 
+                #TROCAR O XPATH DO BOTAO DE DOWNLOAD PARA O DO CTE E FAZER AS ETAPAS ABAIXO 
 
-                if mensagemErroDoc:
-                    print(fr'Ocorreu um erro no CNPJ: {cnpj} na hora de colocar o CNPJ no site')
-                    sleep(2)
-                    driver.close()
-                    driver.switch_to.window(driver.window_handles[0])
-                    sleep(2)
-                    continue  
 
-                mensagemErroData = None
-                try:
-                    mensagemErroData = WebDriverWait(driver, 5).until(
-                        EC.visibility_of_element_located((By.XPATH, "//div[contains(text(),'Data inválida')]"))  # ajuste aqui se necessário
-                    )
-                except:
-                    pass
 
-                if mensagemErroData:
-                    print(fr'Ocorreu um erro no CNPJ: {cnpj} na hora de colocar as datas no site')
-                    sleep(2)
-                    driver.close()
-                    driver.switch_to.window(driver.window_handles[0])
-                    sleep(2)
-                    continue 
-                
-                try:
-                    exportarExcel = None
-                    exportarExcel = WebDriverWait(driver, 10).until(
-                            EC.visibility_of_element_located((By.XPATH, "//a[text()='Exportar para Excel']"))
-                    )
-                except:
-                    pass
-                    
-    except Exception as e:
-        print('Erro ao tentar logar')
-        print(e)
-
-#---------------------------
-#1-Essa funçao abre uma abre uma aba para conseguir acessar a consulta de NFe
-#2-chama outra funcao que preenche os dados
-#3-e faz o download do arquivo
-
-def loopNfe(driver,lista_filiais):
-    try:
-        for filiais in lista_filiais:
-            grupo = filiais[0]
-            filial = filiais[1]
-            cnpj = filiais[2]
-
-            while True:
-            
-                '''if len(driver.window_handles) > 1:
-                    driver.switch_to.window(driver.window_handles[0])
-                    driver.close()'''
-                #abre uma nova aba com o link da consulta de nfe
-                driver.execute_script("window.open('');")
-                sleep(1)
-
-                WebDriverWait(driver, 10).until(lambda driver: len(driver.window_handles) > 1)
-                driver.switch_to.window(driver.window_handles[1])
-                driver.get('https://www.sefaz.mt.gov.br/nfe/pages/consultaemitidasrecebidas/consultaemitidasrecebidas.xhtml')
-                sleep(1)
-
-                #----------------------------------
-                #iniciando o preenchimento do dados do contabilista e datas para a consulta
-                dadosConsultaCTE(driver,cnpj)
-                #----------------------------------
-
-                mensagemErro = None
-                try:
-                    mensagemErro = WebDriverWait(driver, 5).until(
-                        EC.visibility_of_element_located((By.XPATH, "//div[contains(@class, 'ui-dialog-content') and contains(text(), 'Contabilista não representa')]"))
-                    )
-                except:
-                    pass
-
-                if mensagemErro:
-                    print(fr'Ocorreu um erro no CNPJ: {cnpj}')
-                    sleep(2)
-                    driver.close()
-                    driver.switch_to.window(driver.window_handles[0])
-                    sleep(2)
-                    break  
-                
-                mensagemErroDoc = None
-                try:
-                    mensagemErroDoc = WebDriverWait(driver, 5).until(
-                        EC.visibility_of_element_located((By.XPATH, "//div[contains(text(),'Documento deve ser informado')]"))
-                    )
-                except:
-                    pass
-
-                if mensagemErroDoc:
-                    print(fr'Ocorreu um erro no CNPJ: {cnpj} na hora de colocar o CNPJ no site')
-                    sleep(2)
-                    driver.close()
-                    driver.switch_to.window(driver.window_handles[0])
-                    sleep(2)
-                    continue  
-
-                mensagemErroData = None
-                try:
-                    mensagemErroData = WebDriverWait(driver, 5).until(
-                        EC.visibility_of_element_located((By.XPATH, "//div[contains(text(),'Data inválida')]"))  # ajuste aqui se necessário
-                    )
-                except:
-                    pass
-
-                if mensagemErroData:
-                    print(fr'Ocorreu um erro no CNPJ: {cnpj} na hora de colocar as datas no site')
-                    sleep(2)
-                    driver.close()
-                    driver.switch_to.window(driver.window_handles[0])
-                    sleep(2)
-                    continue 
-                
                 try:
                     exportarExcel = None
                     exportarExcel = WebDriverWait(driver, 10).until(
@@ -353,7 +220,7 @@ def loopNfe(driver,lista_filiais):
                     
                 if exportarExcel:
                     exportarExcel.click()
-                    caminhoPadrao = fr'C:\SPED_fiscal\Consulta de NF-e EmitidaRecebida\mes_{mesAtual}'
+                    caminhoPadrao = fr'C:\SPED_fiscal\Consulta de СТ-е EmitidaRecebida\mes_{mesAtual}'
 #------------------------------------------------------------------
 #Fazendo modificacoes do arquivo baixado
                     print('clicado para exportar')
@@ -441,6 +308,8 @@ def dadosConsultaCTE(driver,cnpj):
     sleep(2)
     conusltar.click()
     return
+
+
 
 if __name__ == "__main__":
     mainCte()
