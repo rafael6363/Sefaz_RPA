@@ -1,4 +1,5 @@
 from selenium import webdriver
+from selenium.webdriver.support.ui import Select
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
@@ -269,22 +270,32 @@ def loopNfe(driver,lista_filiais):
 #Essa funçao preenche os dados da Consulta de NF-e Emitida/Recebida
 def dadosConsultaCTE(driver,cnpj):
     botaoInsc = WebDriverWait(driver, 10).until(
-        EC.visibility_of_element_located((By.XPATH, "//label[text()='Inscrição Estadual']"))
+        EC.visibility_of_element_located((By.XPATH, '//*[@id="tipoConsulta"]'))
     )
     botaoInsc.click()
+    sleep(2)
 
     insc = WebDriverWait(driver, 10).until(
-        EC.visibility_of_element_located((By.XPATH, "//li[text()='CNPJ']"))
+        EC.visibility_of_element_located((By.XPATH, '//*[@id="tipoConsulta"]/option[4]'))
     )
     insc.click()
     sleep(2)
-    inputCnpj = WebDriverWait(driver, 10).until(
-        EC.visibility_of_element_located((By.XPATH, "//div[@class='ui-panel-content ui-widget-content']//input[contains(@class, 'ui-inputmask')]"))
-    )
+    # Localiza o elemento select pelo id
+    select_element = driver.find_element(By.ID, "idenTomador")
 
-    sleep(5)
-    inputCnpj.click()
-    inputCnpj.send_keys(cnpj)
+    # Cria objeto Select
+    select = Select(select_element)
+
+    # Seleciona a opção pelo valor "2"
+    select.select_by_value("2")
+
+    # WebDriverWait(driver, 10).until(
+    #     EC.visibility_of_element_located((By.XPATH, '//*[@id="idenTomador"]/option[3]'))
+    # ).click()
+    # sleep(2)
+
+    # inputCnpj.click()
+    # inputCnpj.send_keys(cnpj)
 
     sleep(3)
     dataInicial = WebDriverWait(driver, 10).until(
