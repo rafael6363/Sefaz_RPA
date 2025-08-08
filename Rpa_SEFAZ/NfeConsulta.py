@@ -11,6 +11,12 @@ import database
 import DatasMes
 import ModificaCsv
 import os
+from datetime import datetime
+
+hoje = datetime.now()
+mesAtual = hoje.month
+if mesAtual < 10:
+    mesAtual = f'0{mesAtual}'
 
 #pega as informacoes que estao no json
 #--------------json----------------
@@ -51,36 +57,31 @@ def mainNfe():
     LoginEcaptcha(driver)
     loopNfe(driver,lista_filiais)
 
-#----------Comecando login----------------
-def LoginEcaptcha(driver):
-    try:
-        tipoUsuario = WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable((By.ID, 'formLogin:selectTipoUsuario_label')))
-        tipoUsuario.click()
+try:
+    tipoUsuario = WebDriverWait(driver, 10).until(
+        EC.element_to_be_clickable((By.ID, 'formLogin:selectTipoUsuario_label')))
+    tipoUsuario.click()
 
-        # Depois espera o item 'Contabilista' ficar visível e clica
-        contabilista = WebDriverWait(driver, 10).until(
-            EC.visibility_of_element_located((By.ID, 'formLogin:selectTipoUsuario_1')))
+    # Depois espera o item 'Contabilista' ficar visível e clica
+    contabilista = WebDriverWait(driver, 10).until(
+        EC.visibility_of_element_located((By.ID, 'formLogin:selectTipoUsuario_1')))
 
-        contabilista.click() 
-        sleep(2)
-        #tenta resolver o captcha 5x, caso nao consiga, ele fecha o programa
-        cnpjs = database.retornoCnpj()
-        for x in range(5):
-            try:
-                crc = WebDriverWait(driver, 10).until(
-                    EC.visibility_of_element_located((By.ID, 'formLogin:inputLogin'))
-                )
-                crc.clear()
-                sleep(1)
-                crc.send_keys(userContabilista)
+    contabilista.click() 
+    sleep(2)
+    for x in range(5):
+        try:
+            crc = WebDriverWait(driver, 10).until(
+                EC.visibility_of_element_located((By.ID, 'formLogin:inputLogin'))
+            )
+            crc.clear()
+            sleep(1)
+            crc.send_keys(userContabilista)
 
-                senha = WebDriverWait(driver, 10).until(
-                    EC.visibility_of_element_located((By.ID, 'formLogin:inputSenha'))
-                )
-                senha.clear()
-                senha.send_keys(senhaContabilista)
-                sleep(2)
+            senha = WebDriverWait(driver, 10).until(
+                EC.visibility_of_element_located((By.ID, 'formLogin:inputSenha'))
+            )
+            senha.send_keys(senhaContabilista)
+            sleep(2)
 
 #------------------------------------------------------
                 #resolvendo o captcha na sefaz
@@ -104,66 +105,68 @@ def LoginEcaptcha(driver):
                 captchaResolvido.send_keys(captcha)
                 sleep(2)               
 
-                efetuarLogin = WebDriverWait(driver, 10).until(
-                    EC.element_to_be_clickable((By.XPATH, "//button[contains(., 'Efetuar Login')]"))
-                )
-                efetuarLogin.click() 
+            efetuarLogin = WebDriverWait(driver, 10).until(
+                EC.element_to_be_clickable((By.XPATH, "//button[contains(., 'Efetuar Login')]"))
+            )
+            efetuarLogin.click() 
 
-#-----------------------------------
-                #Verifica se ocorreu algum erro
-                #se eocorreu tenta novamente
-                try:
-                    erro = None
-                    erro = WebDriverWait(driver, 10).until(
-                    EC.visibility_of_element_located((By.CLASS_NAME, 'ui-messages-error')))
-                except:
-                    pass
-                if erro:
-                    continue
-
-#-----------------------------------
-                #tenta ver se existe a tela de sessao duplicada
-                #se a sessao esta duplicada, substitue e acessa            
-                try:
-                    outraSessaoAberta = None
-                    outraSessaoAberta = WebDriverWait(driver, 10).until(
-                        EC.visibility_of_element_located((By.XPATH, "//*[contains(@id, 'superPanelMensagem')]"))
-                    )
-                except:
-                    pass
-                if outraSessaoAberta:
-                    senhaSessao = WebDriverWait(driver, 10).until(
-                        EC.visibility_of_element_located((By.CSS_SELECTOR, "input[type='password'].ui-password"))
-                    )
-                    senhaSessao.send_keys(senhaContabilista)
-
-                    substituir  = WebDriverWait(driver, 10).until(
-                        EC.visibility_of_element_located((By.CSS_SELECTOR, "input.btnPadrao[value='Substituir']"))
-                    )
-                    substituir.click()
-                    break
-#---------------------------
-
-                try:
-                    telaInicial = None 
-                    telaInicial = WebDriverWait(driver, 10).until(
-                        EC.visibility_of_element_located((By.ID, "tst"))
-                    )
-                except:
-                    pass
-                
-                if telaInicial:
-                    break
-                else:
-                    pass
-        
+            #-----------------------------------
+            #tenta ver se ocorreu algum erro
+            #se eocorreu tenta novamente
+            try:
+                erro = None
+                #erro = driver.find_element(By.CLASS_NAME, 'ui-messages-error')
+                erro = WebDriverWait(driver, 10).until(
+                EC.visibility_of_element_located((By.CLASS_NAME, 'ui-messages-error')))
             except:
                 pass
-        print('Pasou do login com exito!')
-        #print(cnpjs)
-    except Exception as e:
-        print('Erro ao tentar logar')
-        print(e)
+            if erro:
+                continue
+            #---------------------------
+
+            #-----------------------------------
+            #tenta ver se existe a tela de sessao duplicada
+            #se a sessao esta duplicada, substitue e acessa            
+            try:
+                outraSessaoAberta = None
+                outraSessaoAberta = WebDriverWait(driver, 10).until(
+                    EC.visibility_of_element_located((By.XPATH, "//*[contains(@id, 'superPanelMensagem')]"))
+                )
+            except:
+                pass
+            if outraSessaoAberta:
+                senhaSessao = WebDriverWait(driver, 10).until(
+                    EC.visibility_of_element_located((By.CSS_SELECTOR, "input[type='password'].ui-password"))
+                )
+                senhaSessao.send_keys(senhaContabilista)
+
+                substituir  = WebDriverWait(driver, 10).until(
+                    EC.visibility_of_element_located((By.CSS_SELECTOR, "input.btnPadrao[value='Substituir']"))
+                )
+                substituir.click()
+                break
+            #---------------------------
+
+            try:
+                telaInicial = None 
+                telaInicial = WebDriverWait(driver, 10).until(
+                    EC.visibility_of_element_located((By.ID, "tst"))
+                )
+            except:
+                pass
+            
+            if telaInicial:
+                break
+            else:
+                pass
+    
+        except:
+            pass
+    print('Pasou do login com exito!')
+    #print(cnpjs)
+except Exception as e:
+    print('Erro ao tentar logar')
+    print(e)
 
 #---------------------------
 #1-Essa funçao abre uma abre uma aba para conseguir acessar a consulta de NFe
@@ -254,31 +257,24 @@ def loopNfe(driver,lista_filiais):
                     
                 if exportarExcel:
                     exportarExcel.click()
+                    caminhoPadrao = fr'C:\SPED_fiscal\Consulta de NF-e EmitidaRecebida\mes_{mesAtual}'
 #------------------------------------------------------------------
 #Fazendo modificacoes do arquivo baixado
                     print('clicado para exportar')
                     sleep(15)
                     try:
-                        ModificaCsv.coverterExcelpCsv('nfe', grupo, filial)
-                        print("criado o arquivo consultart.csv")
+                        nomeAruivoAtual = modificaCsv.coverterExcelpCsv('Nfe', grupo, filial)
+                        print(fr"criado o arquivo {nomeAruivoAtual}")
                         import shutil
-                        if os.path.isfile('sequencianotas\csv\consulta.csv'):
-                            tamanhoCsv = os.path.getsize('sequencianotas\csv\Consulta.csv')
+                        if os.path.isfile(fr'downloads\csv\mes_{mesAtual}\{nomeAruivoAtual}'):
+                            tamanhoCsv = os.path.getsize(fr'downloads\csv\mes_{mesAtual}\{nomeAruivoAtual}')
 
                             if tamanhoCsv > 20.48:
                                 print(f'O arquivo  é maior que 1024 bytes.')
 
-                                if os.path.exists(fr'sequencianotas\csv\{cnpj[0]}.csv'):
-                                    print('O arquivo ja existe e sera substituido')
-                                    os.remove(fr'sequencianotas\csv\{cnpj[0]}.csv')
-
-                                os.rename('sequencianotas\csv\Consulta.csv', fr'sequencianotas\csv\{cnpj[0]}.csv')
-                                print(fr"consultar renomeado para 'sequencianotas\csv\{cnpj[0]}.csv'")
-                                sleep(2)
-                                
-                                shutil.copy(fr'sequencianotas\csv\{cnpj[0]}.csv', fr'S:\Automacao\imparqsefaz\{cnpj[0]}.csv')
+                                shutil.copy(fr'downloads\csv\mes_{mesAtual}\{nomeAruivoAtual}', fr'{caminhoPadrao}\{nomeAruivoAtual}')
                      
-                                print(fr"arquivo copiado para 'sequencianotas\csvProd\{cnpj[0]}.csv'")                          
+                                print(fr"Arquivo foi copiado para a pasta: {caminhoPadrao}\{nomeAruivoAtual}'")                          
                                 driver.close()
                                 driver.switch_to.window(driver.window_handles[0])
                                 print('janela fechada')

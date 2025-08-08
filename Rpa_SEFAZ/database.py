@@ -11,8 +11,8 @@ cursor = connectionBd.cursor()
 def retornoCnpj():
     cursor.execute("""
             SELECT M0_CODIGO, M0_FILIAL, M0_CGC  from PROTHEUS11.sigaemp 
-            WHERE LENGTH(trim(M0_CGC)) >= 12 AND 
-            m0_insc not in ('ISENTO',' ')OR m0_insc = NULL
+            WHERE LENGTH(trim(M0_CGC)) >= 12 
+            --AND m0_insc not in ('ISENTO',' ')OR m0_insc = NULL
             """)
     # Usar fetchall() para pegar todas as linhas
     Resutadocnpj = cursor.fetchall()
