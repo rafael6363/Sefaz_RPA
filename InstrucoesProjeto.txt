@@ -53,3 +53,48 @@ Nos campos "Período de Referência Inicial" e "Período de Referência Final" c
 corrente e Pesquisar;
 4. Após a pesquisa carregar, salvar a página como PDF, com o layout em Paisagem;
 Salvar o arquivo no diretório SPED do Fiscal sob o nome especificado no próximo ponto deste
+
+PASTAS
+-criar pastas dos meses dentro da pasta do projeto 
+
+--SEFAZ_RPA
+    |
+    ---documentos/
+        |
+        ---csv NFE
+        |   |
+        |   ---Mes_01
+        |   |
+        |   ---Mes_02
+        |   |
+        |
+        ---csv NFE
+            |
+            ---Mes_01
+            |
+            ---Mes_02
+            |
+
+--para a producao sera colocado nesse diretorio:
+    C:
+    |
+    ---SPED_fiscal
+        |
+        ---Consulta de СТ-е Emitida/Recebida
+        |   |
+        |   ---Mes_01
+        |   |
+        |   ---Mes_02
+        |   
+        ---Consulta de NF-e Emitida/Recebida
+            |
+            ---Mes_01
+            |
+            ---Mes_02
+            |
+
+EXEMPLO DE COMO DEVE SER O NOME DOS CSV:
+
+NFE: Nfe_16_PR FLOR DO CERRADO_07_08
+
+CTE: Cte_16_PR FLOR DO CERRADO_07_08
