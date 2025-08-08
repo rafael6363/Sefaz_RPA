@@ -9,7 +9,7 @@ import resolvebase64
 import json
 import database
 import DatasMes
-import modificaCsv
+import ModificaCsv
 import os
 
 #pega as informacoes que estao no json
@@ -92,7 +92,7 @@ def LoginEcaptcha(driver):
                 resolvebase64.decode64(src)
                 sleep(1)
                 #anticaptcha resolve o captch
-                captcha = anticaptcha.anticaptcha()
+                captcha = antiCaptcha.anticaptcha()
 
                 print(captcha)
 
@@ -259,7 +259,7 @@ def loopNfe(driver,lista_filiais):
                     print('clicado para exportar')
                     sleep(15)
                     try:
-                        modificaCsv.coverterExcelpCsv('nfe', grupo, filial)
+                        ModificaCsv.coverterExcelpCsv('nfe', grupo, filial)
                         print("criado o arquivo consultart.csv")
                         import shutil
                         if os.path.isfile('sequencianotas\csv\consulta.csv'):
