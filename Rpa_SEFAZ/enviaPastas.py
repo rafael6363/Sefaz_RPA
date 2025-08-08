@@ -1,30 +1,51 @@
 import os
+import re
 import shutil
+from datetime import datetime
 
-# Caminho base
+# Caminhos
 base_path = r'C:\SPED_fiscal'
+origem_dir = r'C:\Sefaz_RPA\documents\csv'
 
-# Estrutura de diretórios que você quer garantir
-tipos = [
-    'Consulta de CT-e Emitida\\Recebida',
-    'Consulta de NF-e Emitida\\Recebida'
-]
+# Tipos e seus respectivos diretórios
+tipos = {
+    'NFe': r'Consulta de NF-e EmitidaRecebida',
+    'CTe': r'Consulta de CT-e EmitidaRecebida'
+}
 
-# Cria 12 meses para cada tipo de consulta
-for tipo in tipos:
-    for mes in range(1, 13):
-        nome_mes = f'Mes_{mes:02d}'  # Gera Mes_01, Mes_02, ..., Mes_12
-        caminho_completo = os.path.join(base_path, tipo, nome_mes)
-        os.makedirs(caminho_completo, exist_ok=True)
-        
-print("Estrutura de pastas garantida.")
+# Mês atual com dois dígitos
+hoje = datetime.now()
+mes_atual = f'{hoje.month:02d}'
 
-# copiar um arquivo para 'Mes_01' da NF-e
-origem = r'C:\Sefaz_RPA\img'
-destino = os.path.join(base_path, r'Consulta de NF-e Emitida\Recebida\Mes_01\Consulta.csv')
+# Criar apenas as pastas do mês atual se não existirem
+for tipo_pasta in tipos.values():
+    nome_pasta = f'Mes_{mes_atual}'
+    caminho = os.path.join(base_path, tipo_pasta, nome_pasta)
+    if not os.path.exists(caminho):
+        os.makedirs(caminho)
 
-if os.path.isfile(origem):
-    shutil.copy(origem, destino)
-    print("Arquivo copiado com sucesso.")
+# Buscar o arquivo mais recente na origem
+arquivos = [os.path.join(origem_dir, f) for f in os.listdir(origem_dir) if os.path.isfile(os.path.join(origem_dir, f))]
+
+if not arquivos:
+    print("Nenhum arquivo encontrado na pasta de origem.")
 else:
-    print("Arquivo de origem não encontrado.")
+    arquivo_mais_recente = max(arquivos, key=os.path.getmtime)
+    nome_arquivo = os.path.basename(arquivo_mais_recente)
+    print(f"Arquivo mais recente encontrado: {nome_arquivo}")
+
+    # Detectar tipo (NFe ou CTe)
+    match = re.match(r'^(NFe|CTe)_', nome_arquivo)
+    if not match:
+        print("Formato do nome do arquivo inválido. Esperado: NFe_algo_082025 ou CTe_algo_082025")
+    else:
+        tipo_doc = match.group(1)
+        tipo_destino = tipos[tipo_doc]
+
+        # Caminho destino usando mês atual
+        destino_pasta = os.path.join(base_path, tipo_destino, f'Mes_{mes_atual}')
+        os.makedirs(destino_pasta, exist_ok=True)
+
+        destino = os.path.join(destino_pasta, nome_arquivo)
+        shutil.copy(arquivo_mais_recente, destino)
+        print(f"Arquivo copiado para: {destino}")
