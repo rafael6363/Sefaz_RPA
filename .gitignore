@@ -1,2 +1,7 @@
 .venv/
 __pycache__/
+img/*
+downloads/csv/*
+downloads/xls/*
+Rpa_SEFAZ/__pycache__/
+.vscode/

@@ -21,7 +21,6 @@ respectivamente;
 todo mês cujo nome seguirá o padrão: Número do Mês - Mês, na pasta "Consulta de NF-e
 Emitida/Recebida" dentro do diretório SPED Fiscal.
 
-
 SEGUNDA PARTE 
 --hianny
 O RPA também deve exportar também as relações dos CT-e seguindo os passos:
@@ -80,13 +79,13 @@ PASTAS
     |
     ---SPED_fiscal
         |
-        ---Consulta de СТ-е Emitida/Recebida
+        ---Consulta de СТ-е EmitidaRecebida
         |   |
         |   ---Mes_01
         |   |
         |   ---Mes_02
         |   
-        ---Consulta de NF-e Emitida/Recebida
+        ---Consulta de NF-e EmitidaRecebida
             |
             ---Mes_01
             |

@@ -9,11 +9,11 @@ def decode64(base64_string):
     #print(base64_string)
     decoded_data = base64.b64decode(base64_string)
     # Caminho do arquivo de saída
-    output_file_path = fr'C:\Sefaz_RPA\img\captcha.jpg'
+    output_file_path = fr'img\captcha.jpg'
     # Escrever os dados decodificados no arquivo
     with open(output_file_path, 'wb') as output_file:
         output_file.write(decoded_data)    
-    print("Arquivo salvo com sucesso em:", output_file_path)
+    #print("Arquivo salvo com sucesso em:", output_file_path)
     return 
 
 if __name__ == "__main__":

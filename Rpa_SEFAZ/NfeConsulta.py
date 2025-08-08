@@ -11,6 +11,12 @@ import database
 import DatasMes
 import modificaCsv
 import os
+from datetime import datetime
+
+hoje = datetime.now()
+mesAtual = hoje.month
+if mesAtual < 10:
+    mesAtual = f'0{mesAtual}'
 
 #pega as informacoes que estao no json
 #--------------json----------------
@@ -27,16 +33,14 @@ data_inicio, data_fim = DatasMes.gerar_intervalo_datas()
 #pegando uma lista com o grupo, filliais e cnpj do banco de dados
 lista_filiais = database.retornoCnpj()
 
-#----------------------------------------
-
-
+#-----------caminho download-------------------
+caminho = fr'C:\RPA_NFE_CTE\Sefaz_RPA\downloads\xls'
 
 def mainNfe():
     #setando opçoes no chromedriver
     options = webdriver.ChromeOptions()
     options.add_experimental_option("prefs", {
-    "download.default_directory": "document/xls/",
-    #
+    "download.default_directory": caminho,
     "download.prompt_for_download": False,
     "download.directory_upgrade": True,
     "safebrowsing.enabled": True
@@ -79,17 +83,19 @@ try:
             senha.send_keys(senhaContabilista)
             sleep(2)
 
-            #----------------------------
-            #resolvendo o captcha na sefaz
-            captcha_element = driver.find_element(By.XPATH, '//img[contains(@src, "data:image/png;base64")]')
-            # Pegando o atributo src
-            src = captcha_element.get_attribute('src')
-            #o decode64 pega a imagem que vem em base 64 e converte em jpg
-            resolvebase64.decode64(src)
-            sleep(1)
-            #anticaptcha resolve o captch
-            captcha = anticaptcha()
-            print(captcha)
+#------------------------------------------------------
+                #resolvendo o captcha na sefaz
+                captcha_element = driver.find_element(By.XPATH, '//img[contains(@src, "data:image/png;base64")]')
+                # Pegando o atributo src
+                src = captcha_element.get_attribute('src')
+                print(src)
+                #o decode64 pega a imagem que vem em base 64 e converte em jpg
+                resolvebase64.decode64(src)
+                sleep(1)
+                #anticaptcha resolve o captch
+                captcha = anticaptcha.anticaptcha()
+
+                print(captcha)
 
                 #a enviar captcha resolvido
                 captchaResolvido = WebDriverWait(driver, 10).until(
@@ -251,31 +257,24 @@ def loopNfe(driver,lista_filiais):
                     
                 if exportarExcel:
                     exportarExcel.click()
+                    caminhoPadrao = fr'C:\SPED_fiscal\Consulta de NF-e EmitidaRecebida\mes_{mesAtual}'
 #------------------------------------------------------------------
 #Fazendo modificacoes do arquivo baixado
                     print('clicado para exportar')
                     sleep(15)
                     try:
-                        modificaCsv.coverterExcelpCsv()
-                        print("criado o arquivo consultart.csv")
+                        nomeAruivoAtual = modificaCsv.coverterExcelpCsv('Nfe', grupo, filial)
+                        print(fr"criado o arquivo {nomeAruivoAtual}")
                         import shutil
-                        if os.path.isfile('sequencianotas\csv\consulta.csv'):
-                            tamanhoCsv = os.path.getsize('sequencianotas\csv\Consulta.csv')
+                        if os.path.isfile(fr'downloads\csv\mes_{mesAtual}\{nomeAruivoAtual}'):
+                            tamanhoCsv = os.path.getsize(fr'downloads\csv\mes_{mesAtual}\{nomeAruivoAtual}')
 
                             if tamanhoCsv > 20.48:
                                 print(f'O arquivo  é maior que 1024 bytes.')
 
-                                if os.path.exists(fr'sequencianotas\csv\{cnpj[0]}.csv'):
-                                    print('O arquivo ja existe e sera substituido')
-                                    os.remove(fr'sequencianotas\csv\{cnpj[0]}.csv')
-
-                                os.rename('sequencianotas\csv\Consulta.csv', fr'sequencianotas\csv\{cnpj[0]}.csv')
-                                print(fr"consultar renomeado para 'sequencianotas\csv\{cnpj[0]}.csv'")
-                                sleep(2)
-                                
-                                shutil.copy(fr'sequencianotas\csv\{cnpj[0]}.csv', fr'S:\Automacao\imparqsefaz\{cnpj[0]}.csv')
+                                shutil.copy(fr'downloads\csv\mes_{mesAtual}\{nomeAruivoAtual}', fr'{caminhoPadrao}\{nomeAruivoAtual}')
                      
-                                print(fr"arquivo copiado para 'sequencianotas\csvProd\{cnpj[0]}.csv'")                          
+                                print(fr"Arquivo foi copiado para a pasta: {caminhoPadrao}\{nomeAruivoAtual}'")                          
                                 driver.close()
                                 driver.switch_to.window(driver.window_handles[0])
                                 print('janela fechada')
