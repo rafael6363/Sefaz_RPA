@@ -55,7 +55,8 @@ def mainCte():
     driver.implicitly_wait(2)
     driver.get(url)
     LoginEcaptcha(driver)
-    loopNfe(driver,lista_filiais)
+    loopCte(driver,lista_filiais)
+    driver.quit()
 
 #----------Comecando login----------------
 def LoginEcaptcha(driver):
@@ -177,7 +178,7 @@ def LoginEcaptcha(driver):
 #3-e faz o download do arquivo
 
 
-def loopNfe(driver,lista_filiais):
+def loopCte(driver,lista_filiais):
     try:
         for filiais in lista_filiais:
             grupo = filiais[0]
@@ -291,7 +292,7 @@ def loopNfe(driver,lista_filiais):
 
                 #----------------------------------
                 #iniciando o preenchimento do dados do contabilista e datas para a consulta
-                dadosConsulta(driver,cnpj)
+                dadosConsultaCTE(driver,cnpj)
                 #----------------------------------
 
                 mensagemErro = None
